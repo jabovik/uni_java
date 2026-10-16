@@ -107,7 +107,6 @@ public class TabulatedFunction {
     }
 
     public void deletePoint(int index) {
-        // TODO: index check
         if (index != getPointsCount() - 1) {
             System.arraycopy(points, index + 1, points, index, getPointsCount() - index - 1);
         }
@@ -123,7 +122,7 @@ public class TabulatedFunction {
         } else {
             // binary search
             int left = 0;
-            int right = getPointsCount();
+            int right = getPointsCount(); // +1 for end
             while (right - left > 1) {
                 int mid = (left + right) / 2;
                 if (getPointX(mid) <= point.getX()) {
@@ -132,11 +131,11 @@ public class TabulatedFunction {
                     right = mid;
                 }
             }
-            if (getPointX(right) == point.getX()) {
-                setPoint(right, point);
+            if (getPointX(right) == point.getX()) { // if matches w/ existing -> rewrite point
+                points[right] = new FunctionPoint(point);
                 return;
             } else if (getPointX(left) == point.getX()) {
-                setPoint(left, point);
+                points[left] = new FunctionPoint(point);
                 return;
             }
             index = right;
@@ -149,7 +148,7 @@ public class TabulatedFunction {
             System.arraycopy(points, index, newPoints, index + 1, getPointsCount() - index);
             points = newPoints;
         }
-        setPoint(index, point);
         pointsCount++;
+        points[index] = new FunctionPoint(point);
     }
 }
