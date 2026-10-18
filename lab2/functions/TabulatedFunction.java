@@ -122,7 +122,7 @@ public class TabulatedFunction {
         } else {
             // binary search
             int left = 0;
-            int right = getPointsCount(); // +1 for end
+            int right = getPointsCount()-1;
             while (right - left > 1) {
                 int mid = (left + right) / 2;
                 if (getPointX(mid) <= point.getX()) {
