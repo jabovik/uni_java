@@ -131,10 +131,10 @@ public class TabulatedFunction {
                     right = mid;
                 }
             }
-            if (getPointX(right) == point.getX()) { // if matches w/ existing -> rewrite point
+            if (Math.abs(getPointX(right) - point.getX()) < 1e-9) { // if matches w/ existing -> rewrite point
                 points[right] = new FunctionPoint(point);
                 return;
-            } else if (getPointX(left) == point.getX()) {
+            } else if (Math.abs(getPointX(left) - point.getX()) < 1e-9) {
                 points[left] = new FunctionPoint(point);
                 return;
             }
