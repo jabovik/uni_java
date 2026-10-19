@@ -238,8 +238,8 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
             System.arraycopy(points, index, newPoints, index + 1, getPointsCount() - index);
             points = newPoints;
         }
-        setPoint(index, point);
         pointsCount++;
+        setPoint(index, point);
     }
 
     @Override

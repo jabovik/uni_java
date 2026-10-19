@@ -233,9 +233,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
 
     @Override
     public Iterator<FunctionPoint> iterator() {
-        // TODO Auto-generated method stub
         return new ListFunctionIterator() {
-            
         };
     }
     private class ListFunctionIterator implements Iterator<FunctionPoint>{
