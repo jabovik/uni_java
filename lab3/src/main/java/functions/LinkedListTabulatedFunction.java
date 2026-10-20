@@ -17,7 +17,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
             next = null;
         }
 
-        private FunctionNode(FunctionPoint point){
+        private FunctionNode(FunctionPoint point) {
             val = point;
             prev = null;
             next = null;
@@ -56,12 +56,12 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         }
     }
 
-        public double getLeftDomainBorder() {
+    public double getLeftDomainBorder() {
         return getPointX(0);
     }
 
     public double getRightDomainBorder() {
-        return getPointX(pointsCount-1);
+        return getPointX(pointsCount - 1);
     }
 
     public double getFunctionValue(double x) {
@@ -121,7 +121,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         if (valid) {
             getNodeByIndex(index).val = new FunctionPoint(point);
         } else {
-            throw new InappropriateFunctionPointException(); // TODO: add message
+            throw new InappropriateFunctionPointException("Failed to set point");
         }
     }
 
@@ -145,7 +145,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         if (index < 0 || index >= getPointsCount()) {
             throw new FunctionPointIndexOutOfBoundsException("incorrect index " + index);
         }
-        if (getPointsCount() <3){
+        if (getPointsCount() < 3) {
             throw new IllegalStateException("trying to delete point when there are less than 3");
         }
         deleteNodeByIndex(index);
@@ -177,7 +177,6 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         addNodeByIndex(index);
         setPoint(index, point);
     }
-
 
     LinkedListTabulatedFunction() {
         head = new FunctionNode();
@@ -228,7 +227,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         node.next.prev = node.prev;
         node.prev.next = node.next;
         pointsCount--;
-        return node; // TODO: maybe clear node.next and node.prev = null
+        return node; // maybe clear node.next and node.prev = null
     }
 
     @Override
@@ -236,15 +235,18 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return new ListFunctionIterator() {
         };
     }
-    private class ListFunctionIterator implements Iterator<FunctionPoint>{
+
+    private class ListFunctionIterator implements Iterator<FunctionPoint> {
         int count = 0;
+
         @Override
         public boolean hasNext() {
             return count < pointsCount;
         }
+
         @Override
         public FunctionPoint next() {
-            if(!hasNext()){
+            if (!hasNext()) {
                 throw new NoSuchElementException();
             }
             return getPoint(count++);

@@ -138,7 +138,7 @@ public class ArrayTabulatedFunction implements TabulatedFunction {
         if (valid) {
             points[index] = new FunctionPoint(point);
         } else {
-            throw new InappropriateFunctionPointException(); // TODO: add message
+            throw new InappropriateFunctionPointException("Failed to set point");
         }
     }
 
