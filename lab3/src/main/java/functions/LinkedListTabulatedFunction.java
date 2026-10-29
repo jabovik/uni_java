@@ -6,6 +6,8 @@ import java.util.NoSuchElementException;
 public class LinkedListTabulatedFunction implements TabulatedFunction {
     private int pointsCount;
     private FunctionNode head;
+    private FunctionNode currentNode;
+    private int currentIndex;
 
     private class FunctionNode {
         private FunctionNode prev, next;
@@ -35,6 +37,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         head.next = head;
         head.prev = head;
         double step = (rightX - leftX) / (pointsCount - 1);
+        resetCache();
         for (int i = 0; i < pointsCount; i++) {
             addNodeToTail().val = new FunctionPoint(leftX + step * i, 0);
         }
@@ -51,6 +54,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         head.next = head;
         head.prev = head;
         double step = (rightX - leftX) / (values.length - 1);
+        resetCache();
         for (int i = 0; i < values.length; i++) {
             addNodeToTail().val = new FunctionPoint(leftX + step * i, values[i]);
         }
@@ -185,14 +189,42 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         head.prev = head;
     }
 
+    private void resetCache() {
+        currentNode = head;
+        currentIndex = -1;
+    }
+
     private FunctionNode getNodeByIndex(int index) {
         if (index < 0 || index >= pointsCount) {
             throw new IndexOutOfBoundsException();
         }
-        FunctionNode node = head.next;
-        for (int i = 0; i < index; i++) {
-            node = node.next;
+        FunctionNode node;
+        int nodeIndex;
+        int headDistance = index + 1;
+        int tailDistance = getPointsCount() - 1 - index;
+        int currentDistance = currentIndex >= 0 ? Math.abs(index - currentIndex) : Integer.MAX_VALUE;
+        if (currentDistance <= headDistance && currentDistance <= tailDistance) {
+            node = currentNode;
+            nodeIndex = currentIndex;
+        } else if (headDistance <= tailDistance) {
+            node = head.next;
+            nodeIndex = 0;
+        } else {
+            node = head.prev;
+            nodeIndex = pointsCount - 1;
         }
+
+        while (nodeIndex < index) {
+            node = node.next;
+            nodeIndex++;
+        }
+
+        while (nodeIndex > index) {
+            node = node.prev;
+            nodeIndex--;
+        }
+        currentNode = node;
+        currentIndex = index;
         return node;
     }
 
@@ -204,15 +236,19 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         if (index < 0 || index > pointsCount) {
             throw new IndexOutOfBoundsException();
         }
-        FunctionNode node = head;
-        for (int i = 0; i < index; i++) {
-            node = node.next;
+        FunctionNode node;
+        if(index == 0){
+            node = head;
+        }
+        else{
+            node = getNodeByIndex(index-1);
         }
         node.next.prev = new FunctionNode(); // prev of orig next is new
         node.next.prev.next = node.next; // new list next is next of orig
         node.next = node.next.prev; // next of orig is new
         node.next.prev = node; // next of new is orig
         pointsCount++;
+        resetCache();
         return node.next;
     }
 
@@ -227,6 +263,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         node.next.prev = node.prev;
         node.prev.next = node.next;
         pointsCount--;
+        resetCache();
         return node; // maybe clear node.next and node.prev = null
     }
 
