@@ -189,7 +189,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         head.prev = head;
     }
 
-    private void resetCache() {
+    private final void resetCache() {
         currentNode = head;
         currentIndex = -1;
     }
@@ -232,7 +232,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction {
         return addNodeByIndex(pointsCount);
     }
 
-    private FunctionNode addNodeByIndex(int index) {
+    private final FunctionNode addNodeByIndex(int index) {
         if (index < 0 || index > pointsCount) {
             throw new IndexOutOfBoundsException();
         }
