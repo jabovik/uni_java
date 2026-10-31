@@ -30,6 +30,31 @@ public class FunctionPoint implements Serializable {
 
     @Override
     public String toString() {
-        return "FunctionPoint [x=" + x + ", y=" + y + "]";
+        return "(" + x + "; " + y + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof FunctionPoint)) {
+            return false;
+        }
+        FunctionPoint other = (FunctionPoint) obj;
+        return Double.compare(x, other.x) == 0 && Double.compare(y, other.y) == 0;
+    }
+    @Override
+    public int hashCode() {
+        long xBits = Double.doubleToLongBits(x);
+        long yBits = Double.doubleToLongBits(y);
+        int xHash = (int) (xBits ^ (xBits >>> 32));
+        int yHash = (int) (yBits ^ (yBits >>> 32));
+        return xHash ^ yHash;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return new FunctionPoint(this);
     }
 }

@@ -281,4 +281,33 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
             return getPoint(count++);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        for(FunctionPoint point : this){
+            buf.append(point.toString()).append(", ");
+        }
+        return buf.toString();
+    }
+
+    @Override
+     public boolean equals(Object obj) { // TODO: уменьшить время, обращаясь к массиву points напрямую
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof TabulatedFunction)) {
+            return false;
+        }
+        TabulatedFunction other = (TabulatedFunction) obj;
+        if (getPointsCount() != other.getPointsCount()) {
+            return false;
+        }
+        for (int i = 0; i < getPointsCount(); i++) {
+            if (!getPoint(i).equals(other.getPoint(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
