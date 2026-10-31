@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.TreeMap;
+import java.io.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -422,6 +423,25 @@ class TabulatedFunctionTest {
                         f.getFunctionValue((a + b) / 2), 1e-9);
             }
         }
+    }
+
+    @ParameterizedTest
+    @EnumSource (FunctionImplementation.class)
+    void serializationAndDeserializationPreserveAllPoints(FunctionImplementation type) throws IOException, ClassNotFoundException {
+        TabulatedFunction f = type.parabola();
+        byte[] arr;
+        try (ByteArrayOutputStream bytestream = new ByteArrayOutputStream()) {
+            ObjectOutputStream out = new ObjectOutputStream(bytestream);
+            out.writeObject(f);
+            out.flush();
+            arr = bytestream.toByteArray();
+        }
+        TabulatedFunction deserialised;
+        try(ByteArrayInputStream bytein = new ByteArrayInputStream(arr)){
+            ObjectInputStream in = new ObjectInputStream(bytein);
+            deserialised = (TabulatedFunction) in.readObject();
+        }
+        assertMatches(f, snapshot(deserialised));
     }
 
     static void assertPoints(TabulatedFunction f, double[] xs, double[] ys) {
