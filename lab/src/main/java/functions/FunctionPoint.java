@@ -2,8 +2,8 @@ package functions;
 
 import java.io.Serializable;
 
-public class FunctionPoint implements Serializable {
-    final private double x, y;
+public class FunctionPoint implements Serializable, Cloneable {
+    private double x, y;
 
     public FunctionPoint(double x, double y) {
         this.x = x;
@@ -26,6 +26,14 @@ public class FunctionPoint implements Serializable {
 
     public double getY() {
         return y;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override
@@ -54,7 +62,7 @@ public class FunctionPoint implements Serializable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public FunctionPoint clone() {
         return new FunctionPoint(this);
     }
 }

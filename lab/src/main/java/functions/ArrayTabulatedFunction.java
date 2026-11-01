@@ -38,16 +38,16 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
         }
     }
 
-    public ArrayTabulatedFunction(FunctionPoint points[]){
-        if(points.length <2){
+    public ArrayTabulatedFunction(FunctionPoint points[]) {
+        if (points.length < 2) {
             throw new IllegalArgumentException("Not enough points given");
         }
         this.pointsCount = points.length;
         this.points = new FunctionPoint[pointsCount];
         FunctionPoint prev = null;
-        for(int i = 0; i<pointsCount;i++){
+        for (int i = 0; i < pointsCount; i++) {
             FunctionPoint point = points[i];
-            if(prev != null && point.getX() <= prev.getX()){
+            if (prev != null && point.getX() <= prev.getX()) {
                 throw new IllegalArgumentException("Points array is not ordered");
             }
             this.points[i] = new FunctionPoint(point);
@@ -243,7 +243,7 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
                     right = mid;
                 }
             }
-            if (Math.abs(getPointX(right) - point.getX())< 1e-9 || Math.abs(getPointX(left) - point.getX()) < 1e-9) {
+            if (Math.abs(getPointX(right) - point.getX()) < 1e-9 || Math.abs(getPointX(left) - point.getX()) < 1e-9) {
                 throw new InappropriateFunctionPointException("point X matches existing");
             }
             index = right;
@@ -285,14 +285,14 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
     @Override
     public String toString() {
         StringBuffer buf = new StringBuffer();
-        for(FunctionPoint point : this){
+        for (FunctionPoint point : this) {
             buf.append(point.toString()).append(", ");
         }
         return buf.toString();
     }
 
     @Override
-     public boolean equals(Object obj) { // TODO: уменьшить время, обращаясь к массиву points напрямую
+    public boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
@@ -303,11 +303,37 @@ public class ArrayTabulatedFunction implements TabulatedFunction, Serializable {
         if (getPointsCount() != other.getPointsCount()) {
             return false;
         }
-        for (int i = 0; i < getPointsCount(); i++) {
-            if (!getPoint(i).equals(other.getPoint(i))) {
-                return false;
+        if (other instanceof ArrayTabulatedFunction) {
+            ArrayTabulatedFunction otherArray = (ArrayTabulatedFunction) other;
+            for (int i = 0; i < pointsCount; i++) {
+                if (!points[i].equals(otherArray.points[i])) {
+                    return false;
+                }
+            }
+        } else {
+            for (int i = 0; i < getPointsCount(); i++) {
+                if (!getPoint(i).equals(other.getPoint(i))) {
+                    return false;
+                }
             }
         }
         return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = pointsCount;
+        for(FunctionPoint point : this){
+            hash = hash ^ point.hashCode();
+        }
+        return hash;
+    }
+
+    @Override
+    public ArrayTabulatedFunction clone() {
+        // копирование исключает пустые точки после deletePoint
+        FunctionPoint[] copy = new FunctionPoint[pointsCount];
+        System.arraycopy(points, 0, copy, 0, pointsCount);
+        return new ArrayTabulatedFunction(copy);
     }
 }

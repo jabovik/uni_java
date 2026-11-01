@@ -4,3 +4,4 @@
 *.bin
 *.txt
 *.lst
+surefire-reports/

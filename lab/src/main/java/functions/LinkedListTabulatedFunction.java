@@ -204,7 +204,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Externali
         setPoint(index, point);
     }
 
-    public LinkedListTabulatedFunction() {
+    public LinkedListTabulatedFunction() { // нужен для сериализации и клонирования
         head = new FunctionNode();
         pointsCount = 0;
         head.next = head;
@@ -329,5 +329,61 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Externali
             out.writeDouble(point.getX());
             out.writeDouble(point.getY());
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buf = new StringBuffer();
+        for (FunctionPoint point : this) {
+            buf.append(point.toString()).append(", ");
+        }
+        return buf.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof TabulatedFunction)) {
+            return false;
+        }
+        TabulatedFunction other = (TabulatedFunction) obj;
+        if (getPointsCount() != other.getPointsCount()) {
+            return false;
+        }
+        if (other instanceof LinkedListTabulatedFunction) {
+            LinkedListTabulatedFunction otherList = (LinkedListTabulatedFunction) other;
+            for (int i = 0; i < pointsCount; i++) {
+                if (!getNodeByIndex(i).val.equals(otherList.getNodeByIndex(i).val)) {
+                    return false;
+                }
+            }
+        } else {
+            for (int i = 0; i < getPointsCount(); i++) {
+                if (!getPoint(i).equals(other.getPoint(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = pointsCount;
+        for (FunctionPoint point : this) {
+            hash = hash ^ point.hashCode();
+        }
+        return hash;
+    }
+
+    @Override
+    public LinkedListTabulatedFunction clone() {
+        LinkedListTabulatedFunction copy = new LinkedListTabulatedFunction();
+        for (FunctionPoint point : this) {
+            copy.addNodeToTail().val = new FunctionPoint(point);
+        }
+        return copy;
     }
 }
