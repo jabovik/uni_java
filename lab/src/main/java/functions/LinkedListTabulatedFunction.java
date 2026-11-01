@@ -293,6 +293,7 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Externali
     public Iterator<FunctionPoint> iterator() {
         return new Iterator<FunctionPoint>() {
             int count = 0;
+            FunctionNode el = head;
 
             @Override
             public boolean hasNext() {
@@ -304,7 +305,9 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Externali
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                return new FunctionPoint(getNodeByIndex(count++).val);
+                el = el.next;
+                count++;
+                return new FunctionPoint(el.val);
             }
         };
     }
