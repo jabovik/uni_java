@@ -13,6 +13,33 @@ import java.io.Writer;
 public final class TabulatedFunctions {
     private TabulatedFunctions() {
     }
+    private static TabulatedFunctionFactory factory = new LinkedListTabulatedFunction.LinkedListTabulatedFunctionFactory();
+
+    public static void setTabulatedFunctionFactory(String type){
+        if ("Array".equals(type)){
+            factory = new ArrayTabulatedFunction.ArrayTabulatedFunctionFactory();
+        }
+        else if("LinkedList".equals(type)){
+            factory = new LinkedListTabulatedFunction.LinkedListTabulatedFunctionFactory();
+        }
+        else{
+            throw new IllegalArgumentException("No such type: " + type);
+        }
+    }
+
+    public static TabulatedFunction createTabulatedFunction(double leftX, double rightX, int pointsCount){
+        return factory.createTabulatedFunction(leftX, rightX, pointsCount);
+    }
+
+    public static TabulatedFunction createTabulatedFunction(double leftX, double rightX, double[] values){
+        return factory.createTabulatedFunction(leftX, rightX, values);
+    }
+
+    public static TabulatedFunction createTabulatedFunction(FunctionPoint[] points){
+        return factory.createTabulatedFunction(points);
+    }
+
+
 
     private static double[] linspace(double left, double right, int steps) {
         if (left >= right) {
@@ -35,7 +62,7 @@ public final class TabulatedFunctions {
         for (int i = 0; i < pointsCount; i++) {
             points[i] = new FunctionPoint(arr[i], function.getFunctionValue(arr[i]));
         }
-        return new ArrayTabulatedFunction(points);
+        return createTabulatedFunction(points);
     }
 
     public static void outputTabulatedFunction(TabulatedFunction function, OutputStream out) throws IOException {
@@ -54,7 +81,7 @@ public final class TabulatedFunctions {
         for (int i = 0; i < pointsCount; i++) {
             points[i] = new FunctionPoint(stream.readDouble(), stream.readDouble());
         }
-        return new LinkedListTabulatedFunction(points);
+        return createTabulatedFunction(points);
     }
 
     public static void writeTabulatedFunction(TabulatedFunction function, Writer out) throws IOException {
@@ -82,6 +109,6 @@ public final class TabulatedFunctions {
             double y = tokenizer.nval;
             points[i] = new FunctionPoint(x,y);
         }
-        return new LinkedListTabulatedFunction(points);
+        return createTabulatedFunction(points);
     }
 }
