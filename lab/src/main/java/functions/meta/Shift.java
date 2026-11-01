@@ -24,7 +24,7 @@ public class Shift implements functions.Function {
 
     @Override
     public double getFunctionValue(double x) {
-        return getFunctionValue(x-shiftX) + shiftY;
+        return func.getFunctionValue(x-shiftX) + shiftY;
     }
 
 }
