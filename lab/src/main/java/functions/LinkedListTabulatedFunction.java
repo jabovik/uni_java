@@ -291,25 +291,22 @@ public class LinkedListTabulatedFunction implements TabulatedFunction, Externali
 
     @Override
     public Iterator<FunctionPoint> iterator() {
-        return new ListFunctionIterator() {
-        };
-    }
+        return new Iterator<FunctionPoint>() {
+            int count = 0;
 
-    private class ListFunctionIterator implements Iterator<FunctionPoint> {
-        int count = 0;
-
-        @Override
-        public boolean hasNext() {
-            return count < pointsCount;
-        }
-
-        @Override
-        public FunctionPoint next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
+            @Override
+            public boolean hasNext() {
+                return count < pointsCount;
             }
-            return getPoint(count++);
-        }
+
+            @Override
+            public FunctionPoint next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                return new FunctionPoint(getNodeByIndex(count++).val);
+            }
+        };
     }
 
     @Override
