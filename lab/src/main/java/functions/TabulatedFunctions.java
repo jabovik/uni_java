@@ -27,6 +27,10 @@ public final class TabulatedFunctions {
         }
     }
 
+    public static void setTabulatedFunctionFactory(TabulatedFunctionFactory fact){
+        factory = fact;
+    }
+
     public static TabulatedFunction createTabulatedFunction(double leftX, double rightX, int pointsCount){
         return factory.createTabulatedFunction(leftX, rightX, pointsCount);
     }
@@ -39,7 +43,32 @@ public final class TabulatedFunctions {
         return factory.createTabulatedFunction(points);
     }
 
+    public static TabulatedFunction createTabulatedFunction(Class<? extends TabulatedFunction> type, double leftX, double rightX, int pointsCount){
+        try{
+            return type.getConstructor(double.class, double.class, int.class).newInstance(leftX,rightX,pointsCount);
+        }
+        catch (ReflectiveOperationException e){
+            throw new IllegalArgumentException("Could not create tabulated function", e);
+        }
+    }
 
+    public static TabulatedFunction createTabulatedFunction(Class<? extends TabulatedFunction> type, double leftX, double rightX, double[] values){
+        try{
+            return type.getConstructor(double.class, double.class, double[].class).newInstance(leftX,rightX,values);
+        }
+        catch (ReflectiveOperationException e){
+            throw new IllegalArgumentException("Could not create tabulated function", e);
+        }
+    }
+
+    public static TabulatedFunction createTabulatedFunction(Class<? extends TabulatedFunction> type, FunctionPoint[] points){
+        try{
+            return type.getConstructor(FunctionPoint[].class).newInstance((Object) points);
+        }
+        catch (ReflectiveOperationException e){
+            throw new IllegalArgumentException("Could not create tabulated function", e);
+        }
+    }
 
     private static double[] linspace(double left, double right, int steps) {
         if (left >= right) {
@@ -65,6 +94,15 @@ public final class TabulatedFunctions {
         return createTabulatedFunction(points);
     }
 
+    public static TabulatedFunction tabulate(Class<? extends TabulatedFunction> type, Function function, double leftX, double rightX, int pointsCount) {
+        double arr[] = linspace(leftX, rightX, pointsCount);
+        FunctionPoint[] points = new FunctionPoint[pointsCount];
+        for (int i = 0; i < pointsCount; i++) {
+            points[i] = new FunctionPoint(arr[i], function.getFunctionValue(arr[i]));
+        }
+        return createTabulatedFunction(type,points);
+    }
+
     public static void outputTabulatedFunction(TabulatedFunction function, OutputStream out) throws IOException {
         DataOutputStream stream = new DataOutputStream(out);
         stream.writeInt(function.getPointsCount());
@@ -82,6 +120,16 @@ public final class TabulatedFunctions {
             points[i] = new FunctionPoint(stream.readDouble(), stream.readDouble());
         }
         return createTabulatedFunction(points);
+    }
+
+    public static TabulatedFunction inputTabulatedFunction(Class<? extends TabulatedFunction> type,InputStream in) throws IOException {
+        DataInputStream stream = new DataInputStream(in);
+        int pointsCount = stream.readInt();
+        FunctionPoint[] points = new FunctionPoint[pointsCount];
+        for (int i = 0; i < pointsCount; i++) {
+            points[i] = new FunctionPoint(stream.readDouble(), stream.readDouble());
+        }
+        return createTabulatedFunction(type,points);
     }
 
     public static void writeTabulatedFunction(TabulatedFunction function, Writer out) throws IOException {
@@ -110,5 +158,20 @@ public final class TabulatedFunctions {
             points[i] = new FunctionPoint(x,y);
         }
         return createTabulatedFunction(points);
+    }
+
+    public static TabulatedFunction readTabulatedFunction(Class<? extends TabulatedFunction> type,Reader in) throws IOException{
+        StreamTokenizer tokenizer = new StreamTokenizer(in);
+        tokenizer.nextToken();
+        int pointsCount = (int)tokenizer.nval;
+        FunctionPoint[] points = new FunctionPoint[pointsCount];
+        for(int i = 0;i<pointsCount;i++){
+            tokenizer.nextToken();
+            double x = tokenizer.nval;
+            tokenizer.nextToken();
+            double y = tokenizer.nval;
+            points[i] = new FunctionPoint(x,y);
+        }
+        return createTabulatedFunction(type,points);
     }
 }
